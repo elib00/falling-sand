@@ -6,8 +6,8 @@ N = 5
     
 # 0 kay empty cell, 1 kay taken cell
 GRID = [[0] * N for size in range(N)] #creating the game grid
-STATE_MATRIX = [[-1] * N for size in range(N)]
 NEXT_GRID = [[0] * N for size in range(N)]
+STATE_MATRIX = [[-1] * N for size in range(N)]
     
 #CONDITIONS
 # 0 - the cell below is empty/free
@@ -60,6 +60,11 @@ def determine_condition(row: int, col: int):
     else:
         pass
 
+def copy_grid():
+    for i in range(N):
+        for j in range(N):
+            GRID[i][j], NEXT_GRID[i][j] = NEXT_GRID[i][j], GRID[i][j]
+
 def print_grid():
     for i in range(N):
         line = ""
@@ -75,11 +80,11 @@ def print_grid():
 def main():    
     is_running = True
     # print_grid()
+    print("----- Current Sand Container -----")
+    copy_grid()
+    print_grid()
     
     while is_running:
-        print("----- Current Sand Container -----")
-        print_grid()
-                
         add_sand = int(input("Do you want to add a grain of sand? (1-Yes/0-No): "))
         if add_sand:
             #ask for a valid input of column to add the sand
@@ -93,21 +98,28 @@ def main():
                     print("This column is already full, please try again.")
                 else:
                     valid_col = True
-        
+            
             #at this point, naa natay valid nga column
             
             #i add na nato ang sand sa top sa column
             GRID[0][col_to_drop] = 1 
+            NEXT_GRID[0][col_to_drop] = 1
             #i add sad nato sha sa state matrix
             STATE_MATRIX[0][col_to_drop] = 0
             
-            #mo loop nata sa every sand sa GRID, tas idetermine ang next_GRID
+        #mo loop nata sa every sand sa GRID, tas idetermine ang next_GRID        
+        print("----- Current Sand Container -----")
+        copy_grid()
+        print_grid()
             
         for i in range(N):
             for j in range(N):
                 condition = -1 #placeholder value
+                #TODO problematic ni sha if example ang sa new_grid kay ni adto nislide sa right
+                #dayon karon kay sa loop sa grid kay empty man to pa so iyahang ipa fall ang sand
+                #mag conflict na sila
                 if GRID[i][j] != 0:
-                    print(i, j)
+                    # print(i, j)
                     #now ilihok na nato ang grid, meaning pa move-on na nato ang mga sands
                     # with this, mausab sad ang state matrix, i follow ra nato ang location sa mga sands
                     condition = determine_condition(i, j)
@@ -115,11 +127,11 @@ def main():
                     #diri na part, mag move nata sa mga sands
                     if condition == 0 and STATE_MATRIX[i][j] == 1: #falling, move sa below
                         state = STATE_MATRIX[i][j]
-                        GRID[i][j] = 0 #the last location kay i empty na nato
-                        GRID[i + 1][j] = 1 #balhin na sa new loc, which is down
+                        NEXT_GRID[i][j] = 0 #the last location kay i empty na nato
+                        NEXT_GRID[i + 1][j] = 1 #balhin na sa new loc, which is down
                         STATE_MATRIX[i][j] = -1 #meaning ra ana wala ta ga keep track ana nga cell
                         STATE_MATRIX[i + 1][j] = state
-                        print("hii naa kos falling ")
+                        # print("hii naa kos falling ")
                         
                         #TODO if i move daan ang mga states, sige shag ma change, better if ang copy ang imoha i change tas duplicate nlng nmo
                                 
