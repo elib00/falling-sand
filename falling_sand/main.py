@@ -1,7 +1,6 @@
 """
     --- CELLULAR AUTOMATA ---
-    - Joshua F. Napinas
-    - N is the number rows and cols since the matrix is circular
+    - Basic Falling Sand Simulation (Command-Line Interface Version) by Joshua F. Napinas
 """
 import random
 
@@ -124,8 +123,14 @@ def main():
     print_grid()
     
     while is_running:
-        add_sand = int(input("Do you want to add a grain of sand? (1-Yes/0-No): "))
-        if add_sand:
+        print("Choose Next Course of Action")
+        print("--- Add Sand - Press 1\n--- Render Next Grid State - Press Enter or Any Key\n--- Exit Program - Press 0")
+        action = input("Action: ")
+        if action == "0":
+            is_running = False
+            continue
+        
+        if action == "1":
             #ask for a valid input of column to add the sand
             valid_col = False
             col_to_drop = 0 #default to first column as placeholder value
