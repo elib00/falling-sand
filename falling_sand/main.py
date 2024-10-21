@@ -1,6 +1,9 @@
 """
-    --- N is the number rows and cols since the matrix is circular
+    --- CELLULAR AUTOMATA ---
+    - Joshua F. Napinas
+    - N is the number rows and cols since the matrix is circular
 """
+import random
 
 N = 5
     
@@ -16,11 +19,15 @@ STATE_MATRIX = [[-1] * N for size in range(N)]
 # 3 - the lower right cell is free
 # 4 - both lower cells are free
 # 5 - nowhere to go
+
+#-1 is placeholder for missing transitions
     
 TRANSITION_MATRIX = [
-    [1, 0, 0, 0, 0], #for the stable/resting state (0)
-    [1, 2, 1, 1, 1], #for the falling state (1),
-    [1, 2, 2, 2, 2], #for the pending state (2)
+    [1, 2, -1, -1, -1, -1, -1], #for the stable/resting state (0)
+    [1, 2, -1, -1, -1, -1, -1], #for the falling state (1),
+    [-1, -1, 1, 1, 1, 3, -1], #for the pending state (2)
+    [-1, -1, -1, -1, -1, -1, 0] #for blocked (3)
+    #add blocked
 ]
 
 def determine_condition(row: int, col: int):
@@ -30,47 +37,53 @@ def determine_condition(row: int, col: int):
             condition = 0
             current_state = STATE_MATRIX[row][col]
             STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition]
-            
             return condition
         elif GRID[row + 1][col] == 1: # ilalom kay blocked
             #check if the bottom left or bottom right kay free cell
-
             condition = 1
             current_state = STATE_MATRIX[row][col]
             STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition]
 
             is_left_free, is_right_free = False, False 
             if row + 1 < N and col - 1 > 0: #check if naay valid nga lower left cell
-                if grid[row + 1][col - 1] == 0: #free si left cell
+                if GRID[row + 1][col - 1] == 0: #free si left cell
                     is_left_free = True
                     
             if row + 1 < N and col + 1 < N: #check if naay valid nga lower right cell
-                if grid[row + 1][col + 1] == 0:
-                    is_right_free = True                     
+                if GRID[row + 1][col + 1] == 0:
+                    is_right_free = True         
                         
             #check asa moadto next left ba or right
             if is_left_free and not is_right_free:
                 condition = 2 #adto left
+                current_state = STATE_MATRIX[row][col]
+                STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to falling - left
+                return condition
             if not is_left_free and is_right_free:
                 condition = 3 #adto right
+                current_state = STATE_MATRIX[row][col]
+                STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to falling - right (galibog nako)
+                return condition
             if is_left_free and is_right_free:
                 condition = 4 #choose at random
+                current_state = STATE_MATRIX[row][col]
+                STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to falling - both directions
+                return condition
             if not is_left_free and not is_right_free:
                 condition = 5 #meaning ani naa natas kinailaloman
-    else:
-        pass
 
 def copy_grid():
     for i in range(N):
         for j in range(N):
-            GRID[i][j], NEXT_GRID[i][j] = NEXT_GRID[i][j], GRID[i][j]
+            # GRID[i][j], NEXT_GRID[i][j] = NEXT_GRID[i][j], GRID[i][j]
+            GRID[i][j] = NEXT_GRID[i][j]
 
 def print_grid():
     for i in range(N):
         line = ""
         for j in range(N):
             if GRID[i][j] == 0:
-                line += " _"
+                line += " -"
             else:
                 line += " *"
         print(line)
@@ -94,8 +107,7 @@ def main():
                 col_to_drop = int(input(f"Enter the column to drop the sand 0 - {N - 1}: "))
                 if col_to_drop < 0 or col_to_drop >= N:
                     print("Invalid column, please try again.")
-                elif GRID[0][col_to_drop] == 1: #top row
-                    print("This column is already full, please try again.")
+                #TODO add a checker if napuno na ang column
                 else:
                     valid_col = True
             
@@ -132,6 +144,33 @@ def main():
                         STATE_MATRIX[i][j] = -1 #meaning ra ana wala ta ga keep track ana nga cell
                         STATE_MATRIX[i + 1][j] = state
                         # print("hii naa kos falling ")
+                    elif condition == 2 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move left
+                        state = STATE_MATRIX[i][j]
+                        NEXT_GRID[i][j] = 0 #the last location
+                        NEXT_GRID[i + 1][j - 1] = 1 #transfer sa new loc
+                        STATE_MATRIX[i][j] = -1
+                        STATE_MATRIX[i + 1][j - 1] = state
+                    elif condition == 3 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move right
+                        state = STATE_MATRIX[i][j]
+                        NEXT_GRID[i][j] = 0 #the last location
+                        NEXT_GRID[i + 1][j + 1] = 1 #transfer sa new loc
+                        STATE_MATRIX[i][j] = -1
+                        STATE_MATRIX[i + 1][j + 1] = state
+                    elif condition == 4 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move left or right
+                        state = STATE_MATRIX[i][j]
+                        NEXT_GRID[i][j] = 0 #the last location
+                        
+                        #1 - left, 2 - right
+                        random_number = random.randint(1, 2)
+                        
+                        if random_number == 1:
+                            NEXT_GRID[i + 1][j - 1] = 1
+                            STATE_MATRIX[i][j] = -1
+                            STATE_MATRIX[i + 1][j - 1] = state
+                        elif random_number == 2:
+                            NEXT_GRID[i + 1][j + 1] = 1
+                            STATE_MATRIX[i][j] = -1
+                            STATE_MATRIX[i + 1][j + 1] = state  
                         
                         #TODO if i move daan ang mga states, sige shag ma change, better if ang copy ang imoha i change tas duplicate nlng nmo
                                 
