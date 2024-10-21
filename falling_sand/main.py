@@ -71,6 +71,32 @@ def determine_condition(row: int, col: int):
                 return condition
             if not is_left_free and not is_right_free:
                 condition = 5 #meaning ani naa natas kinailaloman
+                current_state = STATE_MATRIX[row][col]
+                STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to blocked
+                return condition
+    else:
+        #if na reach na ang bottom, dili na mo move dapat
+        #transition from falling - pending - blocked - resting
+        
+        # condition = 1
+        # current_state = STATE_MATRIX[row][col]
+        # STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to pending
+        
+        # condition = 5
+        # current_state = STATE_MATRIX[row][col]
+        # STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to blocked (nowhere to go)
+        
+        # condition = 6
+        # current_state = STATE_MATRIX[row][col]
+        # STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to to resting
+        
+        #we can make this slighly elegant using a loop hahaha
+        conditions = [1, 5, 6]
+        for condition in conditions:
+            current_state = STATE_MATRIX[row][col]
+            STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition]
+        
+        
 
 def copy_grid():
     for i in range(N):
@@ -171,13 +197,16 @@ def main():
                             NEXT_GRID[i + 1][j + 1] = 1
                             STATE_MATRIX[i][j] = -1
                             STATE_MATRIX[i + 1][j + 1] = state  
+                    elif condition == 5 and STATE_MATRIX[i][j] == 3: #blocked, transition to resting
+                        condition = 6 #condition 6 is for settling to resting state
+                        current_state = STATE_MATRIX[i][j]
+                        STATE_MATRIX[i][j] = TRANSITION_MATRIX[current_state][condition] #nahimo na siya nga resting
+                        
                         
                         #TODO if i move daan ang mga states, sige shag ma change, better if ang copy ang imoha i change tas duplicate nlng nmo
                                 
                 
         # IF STATE IS PENDING, immediately transition para ang changes kay ma reflect sa next nga population
-    
-
 
 if __name__ == "__main__":
     main()
