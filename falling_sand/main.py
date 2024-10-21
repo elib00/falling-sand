@@ -18,6 +18,7 @@ STATE_MATRIX = [[-1] * N for size in range(N)]
 # 3 - the lower right cell is free
 # 4 - both lower cells are free
 # 5 - nowhere to go
+# 6 - settling
 
 #-1 is placeholder for missing transitions
     
