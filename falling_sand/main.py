@@ -104,6 +104,14 @@ def is_column_full(col: int):
     
     return not has_empty_cell
         
+        
+def is_sand_container_full():
+    free_columns = 0
+    for i in range(N):
+        if not is_column_full(i):
+            free_columns += 1
+    
+    return free_columns == 0
 
 def copy_grid():
     for i in range(N):
@@ -124,7 +132,7 @@ def print_grid():
     print()
 
 def main():        
-    copy_grid()
+    # copy_grid()
     print_grid()
     
     is_running = True
@@ -155,7 +163,7 @@ def main():
             
             #i add na nato ang sand sa top sa column
             GRID[0][col_to_drop] = 1 
-            NEXT_GRID[0][col_to_drop] = 1
+            # NEXT_GRID[0][col_to_drop] = 1
             #i add sad nato sha sa state matrix
             STATE_MATRIX[0][col_to_drop] = 0
                         
@@ -178,36 +186,36 @@ def main():
                     #diri na part, mag move nata sa mga sands
                     if condition == 0 and STATE_MATRIX[i][j] == 1: #falling, move sa below
                         state = STATE_MATRIX[i][j]
-                        NEXT_GRID[i][j] = 0 #the last location kay i empty na nato
-                        NEXT_GRID[i + 1][j] = 1 #balhin na sa new loc, which is down
+                        GRID[i][j] = 0 #the last location kay i empty na nato
+                        GRID[i + 1][j] = 1 #balhin na sa new loc, which is down
                         STATE_MATRIX[i][j] = -1 #meaning ra ana wala ta ga keep track ana nga cell
                         STATE_MATRIX[i + 1][j] = state
                         # print("hii naa kos falling ")
                     elif condition == 2 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move left
                         state = STATE_MATRIX[i][j]
-                        NEXT_GRID[i][j] = 0 #the last location
-                        NEXT_GRID[i + 1][j - 1] = 1 #transfer sa new loc
+                        GRID[i][j] = 0 #the last location
+                        GRID[i + 1][j - 1] = 1 #transfer sa new loc
                         STATE_MATRIX[i][j] = -1
                         STATE_MATRIX[i + 1][j - 1] = state
                     elif condition == 3 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move right
                         state = STATE_MATRIX[i][j]
-                        NEXT_GRID[i][j] = 0 #the last location
-                        NEXT_GRID[i + 1][j + 1] = 1 #transfer sa new loc
+                        GRID[i][j] = 0 #the last location
+                        GRID[i + 1][j + 1] = 1 #transfer sa new loc
                         STATE_MATRIX[i][j] = -1
                         STATE_MATRIX[i + 1][j + 1] = state
                     elif condition == 4 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move left or right
                         state = STATE_MATRIX[i][j]
-                        NEXT_GRID[i][j] = 0 #the last location
+                        GRID[i][j] = 0 #the last location
                         
                         #1 - left, 2 - right
                         random_number = random.randint(1, 2)
                         
                         if random_number == 1:
-                            NEXT_GRID[i + 1][j - 1] = 1
+                            GRID[i + 1][j - 1] = 1
                             STATE_MATRIX[i][j] = -1
                             STATE_MATRIX[i + 1][j - 1] = state
                         elif random_number == 2:
-                            NEXT_GRID[i + 1][j + 1] = 1
+                            GRID[i + 1][j + 1] = 1
                             STATE_MATRIX[i][j] = -1
                             STATE_MATRIX[i + 1][j + 1] = state  
                     elif condition == 5 and STATE_MATRIX[i][j] == 3: #blocked, transition to resting
@@ -221,8 +229,14 @@ def main():
                 
         # IF STATE IS PENDING, immediately transition para ang changes kay ma reflect sa next nga population
         print("----- Sand Container After Transition -----")
-        copy_grid()
+        # copy_grid()
         print_grid()
+        
+        if is_sand_container_full():
+            is_running = False
+            print("The sand container is full. Please reset the simulation...")
+        
+        
             
 
 if __name__ == "__main__":
