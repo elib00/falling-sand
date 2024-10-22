@@ -3,13 +3,23 @@
     - Basic Falling Sand Simulation (Command-Line Interface Version) by Joshua F. Napinas
 """
 import random
-
-N = 5
     
 # 0 kay empty cell, 1 kay taken cell
+N = int(input("Enter N: "))
 GRID = [[0] * N for size in range(N)] #creating the game grid
 NEXT_GRID = [[0] * N for size in range(N)]
 STATE_MATRIX = [[-1] * N for size in range(N)]
+
+
+#-1 is placeholder for missing transitions
+    
+TRANSITION_MATRIX = [
+    [1, 2, -1, -1, -1, -1, -1], #for the stable/resting state (0)
+    [1, 2, -1, -1, -1, -1, -1], #for the falling state (1),
+    [-1, -1, 1, 1, 1, 3, -1], #for the pending state (2)
+    [-1, -1, -1, -1, -1, -1, 0] #for the blocked state (3)
+    #add blocked
+]
     
 #CONDITIONS
 # 0 - the cell below is empty/free
@@ -19,16 +29,6 @@ STATE_MATRIX = [[-1] * N for size in range(N)]
 # 4 - both lower cells are free
 # 5 - nowhere to go
 # 6 - settling
-
-#-1 is placeholder for missing transitions
-    
-TRANSITION_MATRIX = [
-    [1, 2, -1, -1, -1, -1, -1], #for the stable/resting state (0)
-    [1, 2, -1, -1, -1, -1, -1], #for the falling state (1),
-    [-1, -1, 1, 1, 1, 3, -1], #for the pending state (2)
-    [-1, -1, -1, -1, -1, -1, 0] #for blocked (3)
-    #add blocked
-]
 
 def determine_condition(row: int, col: int):
     condition = -1
@@ -95,7 +95,14 @@ def determine_condition(row: int, col: int):
         for condition in conditions:
             current_state = STATE_MATRIX[row][col]
             STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition]
-        
+    
+def is_column_full(col: int):
+    has_empty_cell = False
+    for i in range(N):
+        if GRID[i][col] == 0:
+            has_empty_cell = True
+    
+    return not has_empty_cell
         
 
 def copy_grid():
@@ -116,17 +123,16 @@ def print_grid():
         
     print()
 
-def main():    
-    is_running = True
-    # print_grid()
-    print("----- Current Sand Container -----")
+def main():        
     copy_grid()
     print_grid()
     
+    is_running = True
     while is_running:
         print("Choose Next Course of Action")
         print("--- Add Sand - Press 1\n--- Render Next Grid State - Press Enter or Any Key\n--- Exit Program - Press 0")
         action = input("Action: ")
+        
         if action == "0":
             is_running = False
             continue
@@ -140,6 +146,8 @@ def main():
                 if col_to_drop < 0 or col_to_drop >= N:
                     print("Invalid column, please try again.")
                 #TODO add a checker if napuno na ang column
+                elif is_column_full(col_to_drop):
+                    print("Column is already full, please try again.")
                 else:
                     valid_col = True
             
@@ -150,13 +158,12 @@ def main():
             NEXT_GRID[0][col_to_drop] = 1
             #i add sad nato sha sa state matrix
             STATE_MATRIX[0][col_to_drop] = 0
-            
+                        
         #mo loop nata sa every sand sa GRID, tas idetermine ang next_GRID        
         print("----- Current Sand Container -----")
-        copy_grid()
         print_grid()
             
-        for i in range(N):
+        for i in range(N - 1, -1, -1):
             for j in range(N):
                 condition = -1 #placeholder value
                 #TODO problematic ni sha if example ang sa new_grid kay ni adto nislide sa right
@@ -213,6 +220,10 @@ def main():
                                 
                 
         # IF STATE IS PENDING, immediately transition para ang changes kay ma reflect sa next nga population
+        print("----- Sand Container After Transition -----")
+        copy_grid()
+        print_grid()
+            
 
 if __name__ == "__main__":
     main()
