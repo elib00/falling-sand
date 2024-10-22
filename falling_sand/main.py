@@ -39,16 +39,17 @@ def determine_condition(row: int, col: int):
             STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition]
             return condition
         elif GRID[row + 1][col] == 1: # ilalom kay blocked
+            print("blocked ang bottom")
             #check if the bottom left or bottom right kay free cell
             condition = 1
             current_state = STATE_MATRIX[row][col]
             STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition]
 
             is_left_free, is_right_free = False, False 
-            if row + 1 < N and col - 1 > 0: #check if naay valid nga lower left cell
+            if row + 1 < N and col - 1 >= 0: #check if naay valid nga lower left cell
                 if GRID[row + 1][col - 1] == 0: #free si left cell
                     is_left_free = True
-                    
+
             if row + 1 < N and col + 1 < N: #check if naay valid nga lower right cell
                 if GRID[row + 1][col + 1] == 0:
                     is_right_free = True         
@@ -132,7 +133,7 @@ def print_grid():
     print()
 
 def main():        
-    # copy_grid()
+    print("Sand Container Initialized")
     print_grid()
     
     is_running = True
@@ -178,13 +179,14 @@ def main():
                 #dayon karon kay sa loop sa grid kay empty man to pa so iyahang ipa fall ang sand
                 #mag conflict na sila
                 if GRID[i][j] != 0:
-                    # print(i, j)
+                    print(i, j, end="--")
                     #now ilihok na nato ang grid, meaning pa move-on na nato ang mga sands
                     # with this, mausab sad ang state matrix, i follow ra nato ang location sa mga sands
                     condition = determine_condition(i, j)
                         
                     #diri na part, mag move nata sa mga sands
                     if condition == 0 and STATE_MATRIX[i][j] == 1: #falling, move sa below
+                        print("fall ta below")
                         state = STATE_MATRIX[i][j]
                         GRID[i][j] = 0 #the last location kay i empty na nato
                         GRID[i + 1][j] = 1 #balhin na sa new loc, which is down
@@ -192,18 +194,21 @@ def main():
                         STATE_MATRIX[i + 1][j] = state
                         # print("hii naa kos falling ")
                     elif condition == 2 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move left
+                        print("left ta mo fall")
                         state = STATE_MATRIX[i][j]
                         GRID[i][j] = 0 #the last location
                         GRID[i + 1][j - 1] = 1 #transfer sa new loc
                         STATE_MATRIX[i][j] = -1
                         STATE_MATRIX[i + 1][j - 1] = state
                     elif condition == 3 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move right
+                        print("fall ta right")
                         state = STATE_MATRIX[i][j]
                         GRID[i][j] = 0 #the last location
                         GRID[i + 1][j + 1] = 1 #transfer sa new loc
                         STATE_MATRIX[i][j] = -1
                         STATE_MATRIX[i + 1][j + 1] = state
                     elif condition == 4 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move left or right
+                        print("fall ta left or right")
                         state = STATE_MATRIX[i][j]
                         GRID[i][j] = 0 #the last location
                         
@@ -222,12 +227,7 @@ def main():
                         condition = 6 #condition 6 is for settling to resting state
                         current_state = STATE_MATRIX[i][j]
                         STATE_MATRIX[i][j] = TRANSITION_MATRIX[current_state][condition] #nahimo na siya nga resting
-                        
-                        
-                        #TODO if i move daan ang mga states, sige shag ma change, better if ang copy ang imoha i change tas duplicate nlng nmo
-                                
-                
-        # IF STATE IS PENDING, immediately transition para ang changes kay ma reflect sa next nga population
+                    
         print("----- Sand Container After Transition -----")
         # copy_grid()
         print_grid()
