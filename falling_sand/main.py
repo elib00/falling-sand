@@ -26,7 +26,7 @@ STATE_MATRIX = [[-1] * N for size in range(N)]
 #-1 is placeholder for missing transitions
 TRANSITION_MATRIX = [
     [1, 2, -1, -1, -1, -1, -1], #for the stable/resting state (0)
-    [1, 2, -1, -1, -1, -1, -1], #for the falling state (1),
+    [1, 2, -1, -1, -1, -1, -1], #for the falling state (1),falling_sand/main.py
     [-1, -1, 1, 1, 1, 3, -1], #for the pending state (2)
     [-1, -1, -1, -1, -1, -1, 0] #for the blocked state (3)
 ]
