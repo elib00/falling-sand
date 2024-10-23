@@ -28,6 +28,10 @@ TRANSITION_MATRIX = [
     [-1, -1, -1, -1, -1, -1, 0] #for the blocked state (3)
 ]
 
+CLOCK = pygame.time.Clock()
+# FRAME_COUNTER = 0
+# FRAME_INTERVAL = 2
+
 # Initialize screen
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Simple Falling Sand Simulator")
@@ -46,7 +50,7 @@ def draw_grid():
 def add_sand(x, y):
     if GRID[y][x] == 0:
         GRID[y][x] = 1
-        STATE_MATRIX[y][x] = 1 #falling ang initial state
+        STATE_MATRIX[y][x] = 0 #falling ang initial state
 
 # Falling logic for the sand
 def update_sand():
@@ -54,7 +58,7 @@ def update_sand():
         for x in range(GRID_WIDTH):
             condition = -1
             
-            if GRID[y][x] != 0 and STATE_MATRIX[y][x] != 0:
+            if GRID[y][x] != 0:
                 condition = determine_condition(y, x)
             
                 if condition == 0 and STATE_MATRIX[y][x] == 1: #falling, move sa below
@@ -147,23 +151,36 @@ def determine_condition(row: int, col: int):
     
 
 def main():
-    CLOCK = pygame.time.Clock()
+    global FRAME_COUNTER
     is_running = True
     while is_running:
         screen.fill(BLACK)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 is_running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                GRID_x = mouse_x // CELL_SIZE
-                GRID_y = mouse_y // CELL_SIZE
-                add_sand(GRID_x, GRID_y)
-
-        # Update the sand
+            
+            #comment this out if ganahan ka magdrop og sands based sa click
+            # if event.type == pygame.MOUSEBUTTONDOWN:
+            #     mouse_x, mouse_y = pygame.mouse.get_pos()
+            #     grid_x = mouse_x // CELL_SIZE
+            #     grid_y = mouse_y // CELL_SIZE
+            #     add_sand(grid_x, grid_y)
+           
+        # FRAME_COUNTER += 1
+        
+        # if FRAME_COUNTER % FRAME_INTERVAL == 0:
+        #     mouse_x, mouse_y = pygame.mouse.get_pos()
+        #     grid_x = mouse_x // CELL_SIZE
+        #     grid_y = mouse_y // CELL_SIZE
+        #     add_sand(grid_x, grid_y)
+            
+        #continuous dropping of sands
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        grid_x = mouse_x // CELL_SIZE
+        grid_y = mouse_y // CELL_SIZE
+        add_sand(grid_x, grid_y)
+        
         update_sand()
-
-        # Draw the GRID
         draw_grid()
 
         # Update the display
