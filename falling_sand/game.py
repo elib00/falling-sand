@@ -34,7 +34,7 @@ CLOCK = pygame.time.Clock()
 
 # Initialize screen
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("Simple Falling Sand Simulator")
+pygame.display.set_caption("Cellular Automaton (FSM) - Simple Falling Sand Simulator")
 
 # Create the grid (10x10, filled with empty cells represented by 0)
 GRID = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
