@@ -50,7 +50,7 @@ def draw_grid():
 def add_sand(x, y):
     if GRID[y][x] == 0:
         GRID[y][x] = 1
-        STATE_MATRIX[y][x] = 0 #falling ang initial state
+        STATE_MATRIX[y][x] = 0 #resting
 
 # Falling logic for the sand
 def update_sand():
@@ -151,7 +151,6 @@ def determine_condition(row: int, col: int):
     
 
 def main():
-    global FRAME_COUNTER
     is_running = True
     while is_running:
         screen.fill(BLACK)
