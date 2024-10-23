@@ -158,7 +158,7 @@ def main():
             while not valid_col:
                 try:
                     col_to_drop = int(input(f"Enter the column to drop the sand 0 - {N - 1}: "))
-                except:
+                except ValueError:
                     print("Invalid number, please try again.")
                     continue
                 if col_to_drop < 0 or col_to_drop >= N:
