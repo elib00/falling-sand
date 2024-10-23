@@ -5,7 +5,19 @@
 import random
     
 # 0 kay empty cell, 1 kay taken cell
-N = int(input("Enter N: "))
+N = 0
+
+while True:
+    try:
+        N = int(input("Enter N: "))
+        if N <= 0:
+            print("Please enter a valid size for the grid")
+        else:
+            print(f"Grid size: {N}")
+            break
+    except ValueError:
+        print("Invalid number, please try again.")
+        
 GRID = [[0] * N for size in range(N)] #creating the grid
 # NEXT_GRID = [[0] * N for size in range(N)]
 STATE_MATRIX = [[-1] * N for size in range(N)]
@@ -101,8 +113,15 @@ def is_column_full(col: int):
             has_empty_cell = True
     
     return not has_empty_cell
+
+def check_full_columns(full_columns):
+    for i in range(N):
+        if i in full_columns: continue
+        else:
+            if is_column_full(i):
+                full_columns.add(i)  
         
-def is_sand_container_full():
+def is_sand_container_full(full_columns):
     free_columns = 0
     for i in range(N):
         if not is_column_full(i):
@@ -131,43 +150,28 @@ def main():
     print("Sand Container Initialized")
     print_grid()
     
+    columns = set([i for i in range(N)])
+    full_columns = set()
+    
     is_running = True
-    while is_running:
-        print("Choose Next Course of Action")
-        print("--- Add Sand - Press 1\n--- Render Next Grid State - Press Enter or Any Key\n--- Exit Program - Press 0")
-        action = input("Action: ")
+    while is_running:        
+        sands_to_drop = random.randint(0, N)
+        print(f"Dropping {sands_to_drop} sand/s in this grid state")
         
-        if action == "0":
-            is_running = False
-            print("Simulation Terminated...")
-            continue
+        free_columns = columns - full_columns
         
-        if action == "1":
-            #ask for a valid input of column to add the sand
-            valid_col = False
-            col_to_drop = 0 #default to first column as placeholder value
-            while not valid_col:
-                col_to_drop = int(input(f"Enter the column to drop the sand 0 - {N - 1}: "))
-                if col_to_drop < 0 or col_to_drop >= N:
-                    print("Invalid column, please try again.")
-                #TODO add a checker if napuno na ang column
-                elif is_column_full(col_to_drop):
-                    print("Column is already full, please try again.")
-                else:
-                    valid_col = True
-            
-            #at this point, naa natay valid nga column
-            
-            #i add na nato ang sand sa top sa column
+        while sands_to_drop > 0 and free_columns:
+            col_to_drop = random.sample(list(free_columns), 1)[0]
+            free_columns.remove(col_to_drop)
             GRID[0][col_to_drop] = 1 
-            # NEXT_GRID[0][col_to_drop] = 1
-            #i add sad nato sha sa state matrix
-            STATE_MATRIX[0][col_to_drop] = 0 #start staet is at rest
-                        
-        #mo loop nata sa every sand sa GRID, tas idetermine ang next_GRID        
+            STATE_MATRIX[0][col_to_drop] = 0 #start state is at rest
+            sands_to_drop -= 1
+        
         print("----- Current Sand Container -----")
         print_grid()
-            
+        
+                        
+        #mo loop nata sa every sand sa GRID, tas idetermine ang next_GRID        
         for i in range(N - 1, -1, -1):
             for j in range(N):
                 condition = -1 #placeholder value
@@ -222,9 +226,15 @@ def main():
         # copy_grid()
         print_grid()
         
-        if is_sand_container_full():
+        # if is_sand_container_full(full_columns):
+        #     is_running = False
+        #     print("The sand container is full. Please reset the simulation...")
+        
+        check_full_columns(full_columns)
+        if len(full_columns) == N:
             is_running = False
             print("The sand container is full. Please reset the simulation...")
+        
         
 
 
