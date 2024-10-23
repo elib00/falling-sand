@@ -31,7 +31,7 @@ TRANSITION_MATRIX = [
     [-1, -1, -1, -1, -1, -1, 0] #for the blocked state (3)
 ]
     
-#CONDITIONS
+# CONDITIONS
 # 0 - the cell below is empty/free
 # 1 - the cell below is blocked/taken/confused
 # 2 - the lower left cell is free
