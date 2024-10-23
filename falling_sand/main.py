@@ -5,7 +5,16 @@
 import random
     
 # 0 kay empty cell, 1 kay taken cell
-N = int(input("Enter N: "))
+
+N = 0
+while True:
+    try:
+        N = int(input("Enter N: "))
+        break
+    except ValueError:
+        print("Invalid number, please try again.")
+    
+
 GRID = [[0] * N for size in range(N)] #creating the grid
 # NEXT_GRID = [[0] * N for size in range(N)]
 STATE_MATRIX = [[-1] * N for size in range(N)]
@@ -147,7 +156,11 @@ def main():
             valid_col = False
             col_to_drop = 0 #default to first column as placeholder value
             while not valid_col:
-                col_to_drop = int(input(f"Enter the column to drop the sand 0 - {N - 1}: "))
+                try:
+                    col_to_drop = int(input(f"Enter the column to drop the sand 0 - {N - 1}: "))
+                except:
+                    print("Invalid number, please try again.")
+                    continue
                 if col_to_drop < 0 or col_to_drop >= N:
                     print("Invalid column, please try again.")
                 #TODO add a checker if napuno na ang column
