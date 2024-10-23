@@ -6,24 +6,22 @@ import random
     
 # 0 kay empty cell, 1 kay taken cell
 N = int(input("Enter N: "))
-GRID = [[0] * N for size in range(N)] #creating the game grid
-NEXT_GRID = [[0] * N for size in range(N)]
+GRID = [[0] * N for size in range(N)] #creating the grid
+# NEXT_GRID = [[0] * N for size in range(N)]
 STATE_MATRIX = [[-1] * N for size in range(N)]
 
 
 #-1 is placeholder for missing transitions
-    
 TRANSITION_MATRIX = [
     [1, 2, -1, -1, -1, -1, -1], #for the stable/resting state (0)
     [1, 2, -1, -1, -1, -1, -1], #for the falling state (1),
     [-1, -1, 1, 1, 1, 3, -1], #for the pending state (2)
     [-1, -1, -1, -1, -1, -1, 0] #for the blocked state (3)
-    #add blocked
 ]
     
 #CONDITIONS
 # 0 - the cell below is empty/free
-# 1 - the cell below is blocked/taken
+# 1 - the cell below is blocked/taken/confused
 # 2 - the lower left cell is free
 # 3 - the lower right cell is free
 # 4 - both lower cells are free
@@ -39,11 +37,10 @@ def determine_condition(row: int, col: int):
             STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition]
             return condition
         elif GRID[row + 1][col] == 1: # ilalom kay blocked
-            print("blocked ang bottom")
             #check if the bottom left or bottom right kay free cell
             condition = 1
             current_state = STATE_MATRIX[row][col]
-            STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition]
+            STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to pending
 
             is_left_free, is_right_free = False, False 
             if row + 1 < N and col - 1 >= 0: #check if naay valid nga lower left cell
@@ -56,7 +53,7 @@ def determine_condition(row: int, col: int):
                         
             #check asa moadto next left ba or right
             if is_left_free and not is_right_free:
-                condition = 2 #adto left
+                condition = 2 #adto left; 
                 current_state = STATE_MATRIX[row][col]
                 STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to falling - left
                 return condition
@@ -82,7 +79,7 @@ def determine_condition(row: int, col: int):
         # condition = 1
         # current_state = STATE_MATRIX[row][col]
         # STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to pending
-        
+         
         # condition = 5
         # current_state = STATE_MATRIX[row][col]
         # STATE_MATRIX[row][col] = TRANSITION_MATRIX[current_state][condition] #transition to blocked (nowhere to go)
@@ -105,7 +102,6 @@ def is_column_full(col: int):
     
     return not has_empty_cell
         
-        
 def is_sand_container_full():
     free_columns = 0
     for i in range(N):
@@ -117,7 +113,6 @@ def is_sand_container_full():
 def copy_grid():
     for i in range(N):
         for j in range(N):
-            # GRID[i][j], NEXT_GRID[i][j] = NEXT_GRID[i][j], GRID[i][j]
             GRID[i][j] = NEXT_GRID[i][j]
 
 def print_grid():
@@ -144,6 +139,7 @@ def main():
         
         if action == "0":
             is_running = False
+            print("Simulation Terminated...")
             continue
         
         if action == "1":
@@ -166,7 +162,7 @@ def main():
             GRID[0][col_to_drop] = 1 
             # NEXT_GRID[0][col_to_drop] = 1
             #i add sad nato sha sa state matrix
-            STATE_MATRIX[0][col_to_drop] = 0
+            STATE_MATRIX[0][col_to_drop] = 0 #start staet is at rest
                         
         #mo loop nata sa every sand sa GRID, tas idetermine ang next_GRID        
         print("----- Current Sand Container -----")
@@ -186,31 +182,26 @@ def main():
                         
                     #diri na part, mag move nata sa mga sands
                     if condition == 0 and STATE_MATRIX[i][j] == 1: #falling, move sa below
-                        print("fall ta below")
                         state = STATE_MATRIX[i][j]
                         GRID[i][j] = 0 #the last location kay i empty na nato
                         GRID[i + 1][j] = 1 #balhin na sa new loc, which is down
                         STATE_MATRIX[i][j] = -1 #meaning ra ana wala ta ga keep track ana nga cell
                         STATE_MATRIX[i + 1][j] = state
-                        # print("hii naa kos falling ")
                     elif condition == 2 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move left
-                        print("left ta mo fall")
                         state = STATE_MATRIX[i][j]
-                        GRID[i][j] = 0 #the last location
-                        GRID[i + 1][j - 1] = 1 #transfer sa new loc
+                        GRID[i][j] = 0
+                        GRID[i + 1][j - 1] = 1
                         STATE_MATRIX[i][j] = -1
                         STATE_MATRIX[i + 1][j - 1] = state
                     elif condition == 3 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move right
-                        print("fall ta right")
                         state = STATE_MATRIX[i][j]
-                        GRID[i][j] = 0 #the last location
-                        GRID[i + 1][j + 1] = 1 #transfer sa new loc
+                        GRID[i][j] = 0
+                        GRID[i + 1][j + 1] = 1
                         STATE_MATRIX[i][j] = -1
                         STATE_MATRIX[i + 1][j + 1] = state
                     elif condition == 4 and STATE_MATRIX[i][j] == 1: #meaning pending to falling, move left or right
-                        print("fall ta left or right")
                         state = STATE_MATRIX[i][j]
-                        GRID[i][j] = 0 #the last location
+                        GRID[i][j] = 0
                         
                         #1 - left, 2 - right
                         random_number = random.randint(1, 2)
@@ -236,8 +227,7 @@ def main():
             is_running = False
             print("The sand container is full. Please reset the simulation...")
         
-        
-            
+
 
 if __name__ == "__main__":
     main()
