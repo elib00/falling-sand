@@ -234,8 +234,6 @@ def main():
         if len(full_columns) == N:
             is_running = False
             print("The sand container is full. Please reset the simulation...")
-        
-        
 
 
 if __name__ == "__main__":
