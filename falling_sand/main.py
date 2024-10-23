@@ -175,7 +175,6 @@ def main():
                 #dayon karon kay sa loop sa grid kay empty man to pa so iyahang ipa fall ang sand
                 #mag conflict na sila
                 if GRID[i][j] != 0:
-                    print(i, j, end="--")
                     #now ilihok na nato ang grid, meaning pa move-on na nato ang mga sands
                     # with this, mausab sad ang state matrix, i follow ra nato ang location sa mga sands
                     condition = determine_condition(i, j)
